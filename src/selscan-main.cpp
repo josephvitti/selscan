@@ -116,6 +116,10 @@ const string ARG_OUTFILE = "--out";
 const string DEFAULT_OUTFILE = "outfile";
 const string HELP_OUTFILE = "The basename for all output files.";
 
+const string ARG_OUTFILE2 = "--out2";
+const string DEFAULT_OUTFILE2 = "outfile2";
+const string HELP_OUTFILE2 = "The basename for all output2 files.";
+
 const string ARG_CUTOFF = "--cutoff";
 const double DEFAULT_CUTOFF = 0.05;
 const string HELP_CUTOFF = "The EHH decay cutoff.";
@@ -294,6 +298,7 @@ int main(int argc, char *argv[])
     params.addFlag(ARG_FILENAME_POP2_VCF, DEFAULT_FILENAME_POP2_VCF, "", HELP_FILENAME_POP2_VCF);
     params.addFlag(ARG_FILENAME_MAP, DEFAULT_FILENAME_MAP, "", HELP_FILENAME_MAP);
     params.addFlag(ARG_OUTFILE, DEFAULT_OUTFILE, "", HELP_OUTFILE);
+    params.addFlag(ARG_OUTFILE2, DEFAULT_OUTFILE2, "", HELP_OUTFILE2);
     params.addFlag(ARG_CUTOFF, DEFAULT_CUTOFF, "", HELP_CUTOFF);
     params.addFlag(ARG_MAX_GAP, DEFAULT_MAX_GAP, "", HELP_MAX_GAP);
     params.addFlag(ARG_GAP_SCALE, DEFAULT_GAP_SCALE, "", HELP_GAP_SCALE);
@@ -349,6 +354,9 @@ int main(int argc, char *argv[])
     }
 
     string outFilename = params.getStringFlag(ARG_OUTFILE);
+    string outFilename2 = params.getStringFlag(ARG_OUTFILE2);
+    //string outFilename_ihh2 = params.getStringFlag(ARG_OUTFILE);
+    
     string query = params.getStringFlag(ARG_EHH);
 
     int queryLoc = -1;
@@ -410,9 +418,12 @@ int main(int argc, char *argv[])
     if (SINGLE_EHH) outFilename += ".ehh." + query;
     else if (CALC_IHS) outFilename += ".ihs";
     else if (CALC_NSL) outFilename += ".nsl";
-    else if (CALC_XP) outFilename += ".xpehh";
+    else if (CALC_XP) outFilename += ".popihh"; 
     else if (CALC_SOFT) outFilename += ".ihh12";
     else if (CALC_PI) outFilename += ".pi." + string(PI_WIN_str) + "bp";
+
+    if (CALC_XP) outFilename2 += ".popihh"; //".xpehh";
+    
 
     if (ALT) outFilename += ".alt";
 
@@ -601,6 +612,19 @@ int main(int argc, char *argv[])
         cerr << "ERROR: could not open " << outFilename << " for writing.\n";
         return 1;
     }
+
+    ofstream fout2;
+    if (CALC_XP){
+    //Open stream for output file
+        outFilename2 += ".out";
+        fout2.open(outFilename2.c_str());
+        if (fout.fail())
+        {
+            cerr << "ERROR: could not open " << outFilename2 << " for writing.\n";
+            return 1;
+        }
+    }
+
 
 
     for (int i = 0; i < argc; i++)
@@ -812,21 +836,42 @@ int main(int argc, char *argv[])
         releaseHapData(hapData2);
         cerr << "\nFinished.\n";
 
-        fout << "id\tpos\tgpos\tp1\tihh1\tp2\tihh2\txpehh\n";
+        fout << "id\tpos\tgpos\tp1\tihh1\n";//p2\tihh2\txpehh\n";
         for (int i = 0; i < mapData->nloci; i++)
         {
-            if (ihh1[i] != MISSING && ihh2[i] != MISSING && ihh1[i] != 0 && ihh2[i] != 0)
+            if (ihh1[i] != MISSING)// && ihh2[i] != MISSING && ihh1[i] != 0 && ihh2[i] != 0)
             {
                 fout << mapData->locusName[i] << "\t"
                      << mapData->physicalPos[i] << "\t"
                      << mapData->geneticPos[i] << "\t"
                      << freq1[i] << "\t"
-                     << ihh1[i] << "\t"
-                     << freq2[i] << "\t"
-                     << ihh2[i] << "\t";
-                fout << log(ihh1[i] / ihh2[i]) << endl;
+                     << ihh1[i] << "\t" << endl;
+                     //<< freq2[i] << "\t"
+                     //<< ihh2[i] << "\t";
+                //fout << log(ihh1[i] / ihh2[i]) << endl;
             }
         }
+
+
+        fout2 << "id\tpos\tgpos\tp2\tihh2\n";//p2\tihh2\txpehh\n";
+        for (int i = 0; i < mapData->nloci; i++)
+        {
+            if (ihh2[i] != MISSING)//# && ihh2[i] != MISSING && ihh1[i] != 0 && ihh2[i] != 0)
+            {
+                fout2 << mapData->locusName[i] << "\t"
+                     << mapData->physicalPos[i] << "\t"
+                     << mapData->geneticPos[i] << "\t"
+                     //<< freq1[i] << "\t"
+                     //<< ihh1[i] << "\t"
+                     << freq2[i] << "\t"
+                     << ihh2[i] << "\t" << endl;
+                //fout << log(ihh1[i] / ihh2[i]) << endl;
+            }
+        }
+
+
+
+
     }
     else if (CALC_IHS)
     {
@@ -1261,6 +1306,7 @@ int main(int argc, char *argv[])
 
     flog.close();
     fout.close();
+    fout2.close();
 
 #ifdef PTW32_STATIC_LIB
     pthread_win32_process_detach_np();
