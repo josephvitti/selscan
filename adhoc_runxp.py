@@ -1,7 +1,7 @@
 ##	JV having trouble properly getting modified CMS repo to install from modified selscan repo, so just include as a subdir and hack around scans.py
 ##	07.25.2019
 
-basecmd = "bin/linux/selscan"
+basecmd = "app/bin/linux/selscan"
 	
 import sys
 import subprocess
