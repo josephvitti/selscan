@@ -418,11 +418,11 @@ int main(int argc, char *argv[])
     if (SINGLE_EHH) outFilename += ".ehh." + query;
     else if (CALC_IHS) outFilename += ".ihs";
     else if (CALC_NSL) outFilename += ".nsl";
-    else if (CALC_XP) outFilename += ".popihh"; 
+   // else if (CALC_XP) outFilename += ".popihh"; 
     else if (CALC_SOFT) outFilename += ".ihh12";
     else if (CALC_PI) outFilename += ".pi." + string(PI_WIN_str) + "bp";
 
-    if (CALC_XP) outFilename2 += ".popihh"; //".xpehh";
+  // if (CALC_XP) outFilename2 += ".popihh"; //".xpehh";
     
 
     if (ALT) outFilename += ".alt";
@@ -605,7 +605,7 @@ int main(int argc, char *argv[])
 
     //Open stream for output file
     ofstream fout;
-    outFilename += ".out";
+    //outFilename += ".out";
     fout.open(outFilename.c_str());
     if (fout.fail())
     {
@@ -616,7 +616,7 @@ int main(int argc, char *argv[])
     ofstream fout2;
     if (CALC_XP){
     //Open stream for output file
-        outFilename2 += ".out";
+       // outFilename2 += ".out";
         fout2.open(outFilename2.c_str());
         if (fout.fail())
         {
