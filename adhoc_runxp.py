@@ -11,7 +11,7 @@ def main():
 		print('call program as: python adhoc_runxp.py {in_tped1} {out1} {in_tped2} {out2}')
 		sys.exit()
 	in_tped1, out_popihh1, in_tped2, out_popihh2 = sys.argv[1:] 
-	full_cmd = basecmd + " --xpehh --tped " + in_tped1 + " --out " + out_popihh1 + " --tped-ref " + in_tped2 + " --out2 " + out_popihh2 + " --maf 0.05 --gap-scale 20000 --threads 15 "
+	full_cmd = basecmd + " --xpehh --tped " + in_tped1 + " --out " + out_popihh1 + " --tped-ref " + in_tped2 + " --out2 " + out_popihh2 + " --maf 0.05 --gap-scale 20000 --threads 31 "
 	print(full_cmd)
 	subprocess.check_output(full_cmd.split())
 
